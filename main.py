@@ -6,8 +6,8 @@ pygame.init()
 pygame.font.init()
 
 WIDTH = 1000
-HEIGHT = 600
-MARGIN = 50
+HEIGHT = 650
+MARGIN = 60
 TITLE = 'Buffon\'s Needle Problem'
 ICON = pygame.image.load('icon.png')
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -25,19 +25,40 @@ def set_window(TITLE, ICON):
 
 
 class Simulation:
-    def __init__(self):
+    def __init__(self, no_of_needles=300):
         self.RUNNING = True
+        self.no_of_needles = no_of_needles
+        self.floor = Floor()
+        self.needles = self.create_needles()
+        self.probability = 0
+        self.pi_estimate = 0
 
     def run(self):
         while self.RUNNING:
+            SCREEN.fill(WHITE)
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.RUNNING = False
+                self.RUNNING = False if event.type == pygame.QUIT else True
+
+            self.show_needles()
+            self.floor.show_divisions()
             pygame.display.update()
+
+    def create_needles(self):
+        needles = []
+        for _ in range(self.no_of_needles):
+            x, y = random.randint(0, WIDTH), random.randint(0, HEIGHT-MARGIN)
+            angle = random.uniform(0, 2*math.pi)
+            needle = Needle(x, y, angle)
+            needles.append(needle)
+        return needles
+
+    def show_needles(self):
+        for needle in self.needles:
+            needle.show()
 
 
 class Needle:
-    def __init__(self, x, y, angle, color, length=50):
+    def __init__(self, x, y, angle, color=BLACK, length=50):
         self.length = length
         self.x = x
         self.y = y
@@ -52,7 +73,7 @@ class Needle:
         return (new_x, new_y)
 
     def show(self):
-        pygame.draw.line(SCREEN, BLACK, self.start, self.end)
+        pygame.draw.line(SCREEN, self.color, self.start, self.end)
 
 
 class Floor:
@@ -65,7 +86,7 @@ class Floor:
         divisions = []
         for i in range(self.no_of_divisions+1):
             start = 100*i, 0
-            end = 100*i, HEIGHT
+            end = 100*i, HEIGHT-MARGIN+30
             divisions.append((start, end))
         return divisions
 
