@@ -16,6 +16,7 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+GRAY = (127, 127, 127)
 
 
 def set_window(TITLE, ICON):
@@ -36,8 +37,8 @@ class Simulation:
 
 
 class Needle:
-    def __init__(self, x, y, angle, color):
-        self.length = 50
+    def __init__(self, x, y, angle, color, length=50):
+        self.length = length
         self.x = x
         self.y = y
         self.start = (x, y)
@@ -51,12 +52,27 @@ class Needle:
         return (new_x, new_y)
 
     def show(self):
-        pygame.draw.line(SCREEN, WHITE, self.start, self.end)
+        pygame.draw.line(SCREEN, BLACK, self.start, self.end)
 
 
 class Floor:
-    def __init__(self):
-        pass
+    def __init__(self, no_of_divisions=10, width=100):
+        self.no_of_divisions = no_of_divisions
+        self.width = WIDTH//no_of_divisions
+        self.divisions = self.create_divisions()
+
+    def create_divisions(self):
+        divisions = []
+        for i in range(self.no_of_divisions+1):
+            start = 100*i, 0
+            end = 100*i, HEIGHT
+            divisions.append((start, end))
+        return divisions
+
+    def show_divisions(self):
+        for i, division in enumerate(self.divisions):
+            start, end = division
+            pygame.draw.line(SCREEN, GRAY, start, end)
 
 
 def main():
