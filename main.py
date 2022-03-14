@@ -25,7 +25,7 @@ def set_window(TITLE, ICON):
 
 
 class Simulation:
-    def __init__(self, no_of_needles=300):
+    def __init__(self, no_of_needles=3_408):
         self.RUNNING = True
         self.no_of_needles = no_of_needles
         self.floor = Floor()
@@ -41,6 +41,7 @@ class Simulation:
 
             self.show_needles()
             self.floor.show_divisions()
+            print(self.calculate_probability()**-1)
             pygame.display.update()
 
     def create_needles(self):
@@ -55,6 +56,17 @@ class Simulation:
     def show_needles(self):
         for needle in self.needles:
             needle.show()
+
+    def calculate_probability(self):
+        crossing_needles = 0
+        for i, needle in enumerate(self.needles):
+            start, end = needle.start, needle.end
+            for j, line in enumerate(self.floor.divisions):
+                x_left, x_right = min(start[0], end[0]), max(start[0], end[0])
+                if x_left < line[0][0] < x_right:
+                    needle.color = RED
+                    crossing_needles += 1
+        return crossing_needles/self.no_of_needles
 
 
 class Needle:
@@ -77,9 +89,9 @@ class Needle:
 
 
 class Floor:
-    def __init__(self, no_of_divisions=10, width=100):
-        self.no_of_divisions = no_of_divisions
-        self.width = WIDTH//no_of_divisions
+    def __init__(self, width=100):
+        self.width = width
+        self.no_of_divisions = WIDTH//width
         self.divisions = self.create_divisions()
 
     def create_divisions(self):
